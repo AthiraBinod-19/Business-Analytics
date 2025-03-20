@@ -1,0 +1,1689 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyObFM2Fo9qj2f/IibF3aDdP",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/AthiraBinod-19/Business-Analytics/blob/main/BA%20Assignment%203\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 73
+        },
+        "id": "gMAbzRpwT_in",
+        "outputId": "689414e2-fbc9-40b3-cbb4-7cffdd37b2bd"
+      },
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "\n",
+              "     <input type=\"file\" id=\"files-14f40ace-21da-4f25-b607-cf7d8ef165dc\" name=\"files[]\" multiple disabled\n",
+              "        style=\"border:none\" />\n",
+              "     <output id=\"result-14f40ace-21da-4f25-b607-cf7d8ef165dc\">\n",
+              "      Upload widget is only available when the cell has been executed in the\n",
+              "      current browser session. Please rerun this cell to enable.\n",
+              "      </output>\n",
+              "      <script>// Copyright 2017 Google LLC\n",
+              "//\n",
+              "// Licensed under the Apache License, Version 2.0 (the \"License\");\n",
+              "// you may not use this file except in compliance with the License.\n",
+              "// You may obtain a copy of the License at\n",
+              "//\n",
+              "//      http://www.apache.org/licenses/LICENSE-2.0\n",
+              "//\n",
+              "// Unless required by applicable law or agreed to in writing, software\n",
+              "// distributed under the License is distributed on an \"AS IS\" BASIS,\n",
+              "// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n",
+              "// See the License for the specific language governing permissions and\n",
+              "// limitations under the License.\n",
+              "\n",
+              "/**\n",
+              " * @fileoverview Helpers for google.colab Python module.\n",
+              " */\n",
+              "(function(scope) {\n",
+              "function span(text, styleAttributes = {}) {\n",
+              "  const element = document.createElement('span');\n",
+              "  element.textContent = text;\n",
+              "  for (const key of Object.keys(styleAttributes)) {\n",
+              "    element.style[key] = styleAttributes[key];\n",
+              "  }\n",
+              "  return element;\n",
+              "}\n",
+              "\n",
+              "// Max number of bytes which will be uploaded at a time.\n",
+              "const MAX_PAYLOAD_SIZE = 100 * 1024;\n",
+              "\n",
+              "function _uploadFiles(inputId, outputId) {\n",
+              "  const steps = uploadFilesStep(inputId, outputId);\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  // Cache steps on the outputElement to make it available for the next call\n",
+              "  // to uploadFilesContinue from Python.\n",
+              "  outputElement.steps = steps;\n",
+              "\n",
+              "  return _uploadFilesContinue(outputId);\n",
+              "}\n",
+              "\n",
+              "// This is roughly an async generator (not supported in the browser yet),\n",
+              "// where there are multiple asynchronous steps and the Python side is going\n",
+              "// to poll for completion of each step.\n",
+              "// This uses a Promise to block the python side on completion of each step,\n",
+              "// then passes the result of the previous step as the input to the next step.\n",
+              "function _uploadFilesContinue(outputId) {\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  const steps = outputElement.steps;\n",
+              "\n",
+              "  const next = steps.next(outputElement.lastPromiseValue);\n",
+              "  return Promise.resolve(next.value.promise).then((value) => {\n",
+              "    // Cache the last promise value to make it available to the next\n",
+              "    // step of the generator.\n",
+              "    outputElement.lastPromiseValue = value;\n",
+              "    return next.value.response;\n",
+              "  });\n",
+              "}\n",
+              "\n",
+              "/**\n",
+              " * Generator function which is called between each async step of the upload\n",
+              " * process.\n",
+              " * @param {string} inputId Element ID of the input file picker element.\n",
+              " * @param {string} outputId Element ID of the output display.\n",
+              " * @return {!Iterable<!Object>} Iterable of next steps.\n",
+              " */\n",
+              "function* uploadFilesStep(inputId, outputId) {\n",
+              "  const inputElement = document.getElementById(inputId);\n",
+              "  inputElement.disabled = false;\n",
+              "\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  outputElement.innerHTML = '';\n",
+              "\n",
+              "  const pickedPromise = new Promise((resolve) => {\n",
+              "    inputElement.addEventListener('change', (e) => {\n",
+              "      resolve(e.target.files);\n",
+              "    });\n",
+              "  });\n",
+              "\n",
+              "  const cancel = document.createElement('button');\n",
+              "  inputElement.parentElement.appendChild(cancel);\n",
+              "  cancel.textContent = 'Cancel upload';\n",
+              "  const cancelPromise = new Promise((resolve) => {\n",
+              "    cancel.onclick = () => {\n",
+              "      resolve(null);\n",
+              "    };\n",
+              "  });\n",
+              "\n",
+              "  // Wait for the user to pick the files.\n",
+              "  const files = yield {\n",
+              "    promise: Promise.race([pickedPromise, cancelPromise]),\n",
+              "    response: {\n",
+              "      action: 'starting',\n",
+              "    }\n",
+              "  };\n",
+              "\n",
+              "  cancel.remove();\n",
+              "\n",
+              "  // Disable the input element since further picks are not allowed.\n",
+              "  inputElement.disabled = true;\n",
+              "\n",
+              "  if (!files) {\n",
+              "    return {\n",
+              "      response: {\n",
+              "        action: 'complete',\n",
+              "      }\n",
+              "    };\n",
+              "  }\n",
+              "\n",
+              "  for (const file of files) {\n",
+              "    const li = document.createElement('li');\n",
+              "    li.append(span(file.name, {fontWeight: 'bold'}));\n",
+              "    li.append(span(\n",
+              "        `(${file.type || 'n/a'}) - ${file.size} bytes, ` +\n",
+              "        `last modified: ${\n",
+              "            file.lastModifiedDate ? file.lastModifiedDate.toLocaleDateString() :\n",
+              "                                    'n/a'} - `));\n",
+              "    const percent = span('0% done');\n",
+              "    li.appendChild(percent);\n",
+              "\n",
+              "    outputElement.appendChild(li);\n",
+              "\n",
+              "    const fileDataPromise = new Promise((resolve) => {\n",
+              "      const reader = new FileReader();\n",
+              "      reader.onload = (e) => {\n",
+              "        resolve(e.target.result);\n",
+              "      };\n",
+              "      reader.readAsArrayBuffer(file);\n",
+              "    });\n",
+              "    // Wait for the data to be ready.\n",
+              "    let fileData = yield {\n",
+              "      promise: fileDataPromise,\n",
+              "      response: {\n",
+              "        action: 'continue',\n",
+              "      }\n",
+              "    };\n",
+              "\n",
+              "    // Use a chunked sending to avoid message size limits. See b/62115660.\n",
+              "    let position = 0;\n",
+              "    do {\n",
+              "      const length = Math.min(fileData.byteLength - position, MAX_PAYLOAD_SIZE);\n",
+              "      const chunk = new Uint8Array(fileData, position, length);\n",
+              "      position += length;\n",
+              "\n",
+              "      const base64 = btoa(String.fromCharCode.apply(null, chunk));\n",
+              "      yield {\n",
+              "        response: {\n",
+              "          action: 'append',\n",
+              "          file: file.name,\n",
+              "          data: base64,\n",
+              "        },\n",
+              "      };\n",
+              "\n",
+              "      let percentDone = fileData.byteLength === 0 ?\n",
+              "          100 :\n",
+              "          Math.round((position / fileData.byteLength) * 100);\n",
+              "      percent.textContent = `${percentDone}% done`;\n",
+              "\n",
+              "    } while (position < fileData.byteLength);\n",
+              "  }\n",
+              "\n",
+              "  // All done.\n",
+              "  yield {\n",
+              "    response: {\n",
+              "      action: 'complete',\n",
+              "    }\n",
+              "  };\n",
+              "}\n",
+              "\n",
+              "scope.google = scope.google || {};\n",
+              "scope.google.colab = scope.google.colab || {};\n",
+              "scope.google.colab._files = {\n",
+              "  _uploadFiles,\n",
+              "  _uploadFilesContinue,\n",
+              "};\n",
+              "})(self);\n",
+              "</script> "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Saving X_test.xlsx to X_test.xlsx\n"
+          ]
+        }
+      ],
+      "source": [
+        "from google.colab import files\n",
+        "\n",
+        "# Upload files\n",
+        "uploaded = files.upload()\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import files\n",
+        "\n",
+        "# Upload files\n",
+        "uploaded = files.upload()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 73
+        },
+        "id": "cJR6nKlSU1mw",
+        "outputId": "fc487182-af82-49bb-d39a-51565243d893"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "\n",
+              "     <input type=\"file\" id=\"files-28b56013-a5b9-483c-bdbf-c59cfa806b1e\" name=\"files[]\" multiple disabled\n",
+              "        style=\"border:none\" />\n",
+              "     <output id=\"result-28b56013-a5b9-483c-bdbf-c59cfa806b1e\">\n",
+              "      Upload widget is only available when the cell has been executed in the\n",
+              "      current browser session. Please rerun this cell to enable.\n",
+              "      </output>\n",
+              "      <script>// Copyright 2017 Google LLC\n",
+              "//\n",
+              "// Licensed under the Apache License, Version 2.0 (the \"License\");\n",
+              "// you may not use this file except in compliance with the License.\n",
+              "// You may obtain a copy of the License at\n",
+              "//\n",
+              "//      http://www.apache.org/licenses/LICENSE-2.0\n",
+              "//\n",
+              "// Unless required by applicable law or agreed to in writing, software\n",
+              "// distributed under the License is distributed on an \"AS IS\" BASIS,\n",
+              "// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n",
+              "// See the License for the specific language governing permissions and\n",
+              "// limitations under the License.\n",
+              "\n",
+              "/**\n",
+              " * @fileoverview Helpers for google.colab Python module.\n",
+              " */\n",
+              "(function(scope) {\n",
+              "function span(text, styleAttributes = {}) {\n",
+              "  const element = document.createElement('span');\n",
+              "  element.textContent = text;\n",
+              "  for (const key of Object.keys(styleAttributes)) {\n",
+              "    element.style[key] = styleAttributes[key];\n",
+              "  }\n",
+              "  return element;\n",
+              "}\n",
+              "\n",
+              "// Max number of bytes which will be uploaded at a time.\n",
+              "const MAX_PAYLOAD_SIZE = 100 * 1024;\n",
+              "\n",
+              "function _uploadFiles(inputId, outputId) {\n",
+              "  const steps = uploadFilesStep(inputId, outputId);\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  // Cache steps on the outputElement to make it available for the next call\n",
+              "  // to uploadFilesContinue from Python.\n",
+              "  outputElement.steps = steps;\n",
+              "\n",
+              "  return _uploadFilesContinue(outputId);\n",
+              "}\n",
+              "\n",
+              "// This is roughly an async generator (not supported in the browser yet),\n",
+              "// where there are multiple asynchronous steps and the Python side is going\n",
+              "// to poll for completion of each step.\n",
+              "// This uses a Promise to block the python side on completion of each step,\n",
+              "// then passes the result of the previous step as the input to the next step.\n",
+              "function _uploadFilesContinue(outputId) {\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  const steps = outputElement.steps;\n",
+              "\n",
+              "  const next = steps.next(outputElement.lastPromiseValue);\n",
+              "  return Promise.resolve(next.value.promise).then((value) => {\n",
+              "    // Cache the last promise value to make it available to the next\n",
+              "    // step of the generator.\n",
+              "    outputElement.lastPromiseValue = value;\n",
+              "    return next.value.response;\n",
+              "  });\n",
+              "}\n",
+              "\n",
+              "/**\n",
+              " * Generator function which is called between each async step of the upload\n",
+              " * process.\n",
+              " * @param {string} inputId Element ID of the input file picker element.\n",
+              " * @param {string} outputId Element ID of the output display.\n",
+              " * @return {!Iterable<!Object>} Iterable of next steps.\n",
+              " */\n",
+              "function* uploadFilesStep(inputId, outputId) {\n",
+              "  const inputElement = document.getElementById(inputId);\n",
+              "  inputElement.disabled = false;\n",
+              "\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  outputElement.innerHTML = '';\n",
+              "\n",
+              "  const pickedPromise = new Promise((resolve) => {\n",
+              "    inputElement.addEventListener('change', (e) => {\n",
+              "      resolve(e.target.files);\n",
+              "    });\n",
+              "  });\n",
+              "\n",
+              "  const cancel = document.createElement('button');\n",
+              "  inputElement.parentElement.appendChild(cancel);\n",
+              "  cancel.textContent = 'Cancel upload';\n",
+              "  const cancelPromise = new Promise((resolve) => {\n",
+              "    cancel.onclick = () => {\n",
+              "      resolve(null);\n",
+              "    };\n",
+              "  });\n",
+              "\n",
+              "  // Wait for the user to pick the files.\n",
+              "  const files = yield {\n",
+              "    promise: Promise.race([pickedPromise, cancelPromise]),\n",
+              "    response: {\n",
+              "      action: 'starting',\n",
+              "    }\n",
+              "  };\n",
+              "\n",
+              "  cancel.remove();\n",
+              "\n",
+              "  // Disable the input element since further picks are not allowed.\n",
+              "  inputElement.disabled = true;\n",
+              "\n",
+              "  if (!files) {\n",
+              "    return {\n",
+              "      response: {\n",
+              "        action: 'complete',\n",
+              "      }\n",
+              "    };\n",
+              "  }\n",
+              "\n",
+              "  for (const file of files) {\n",
+              "    const li = document.createElement('li');\n",
+              "    li.append(span(file.name, {fontWeight: 'bold'}));\n",
+              "    li.append(span(\n",
+              "        `(${file.type || 'n/a'}) - ${file.size} bytes, ` +\n",
+              "        `last modified: ${\n",
+              "            file.lastModifiedDate ? file.lastModifiedDate.toLocaleDateString() :\n",
+              "                                    'n/a'} - `));\n",
+              "    const percent = span('0% done');\n",
+              "    li.appendChild(percent);\n",
+              "\n",
+              "    outputElement.appendChild(li);\n",
+              "\n",
+              "    const fileDataPromise = new Promise((resolve) => {\n",
+              "      const reader = new FileReader();\n",
+              "      reader.onload = (e) => {\n",
+              "        resolve(e.target.result);\n",
+              "      };\n",
+              "      reader.readAsArrayBuffer(file);\n",
+              "    });\n",
+              "    // Wait for the data to be ready.\n",
+              "    let fileData = yield {\n",
+              "      promise: fileDataPromise,\n",
+              "      response: {\n",
+              "        action: 'continue',\n",
+              "      }\n",
+              "    };\n",
+              "\n",
+              "    // Use a chunked sending to avoid message size limits. See b/62115660.\n",
+              "    let position = 0;\n",
+              "    do {\n",
+              "      const length = Math.min(fileData.byteLength - position, MAX_PAYLOAD_SIZE);\n",
+              "      const chunk = new Uint8Array(fileData, position, length);\n",
+              "      position += length;\n",
+              "\n",
+              "      const base64 = btoa(String.fromCharCode.apply(null, chunk));\n",
+              "      yield {\n",
+              "        response: {\n",
+              "          action: 'append',\n",
+              "          file: file.name,\n",
+              "          data: base64,\n",
+              "        },\n",
+              "      };\n",
+              "\n",
+              "      let percentDone = fileData.byteLength === 0 ?\n",
+              "          100 :\n",
+              "          Math.round((position / fileData.byteLength) * 100);\n",
+              "      percent.textContent = `${percentDone}% done`;\n",
+              "\n",
+              "    } while (position < fileData.byteLength);\n",
+              "  }\n",
+              "\n",
+              "  // All done.\n",
+              "  yield {\n",
+              "    response: {\n",
+              "      action: 'complete',\n",
+              "    }\n",
+              "  };\n",
+              "}\n",
+              "\n",
+              "scope.google = scope.google || {};\n",
+              "scope.google.colab = scope.google.colab || {};\n",
+              "scope.google.colab._files = {\n",
+              "  _uploadFiles,\n",
+              "  _uploadFilesContinue,\n",
+              "};\n",
+              "})(self);\n",
+              "</script> "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Saving Y_test.xlsx to Y_test.xlsx\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import files\n",
+        "\n",
+        "# Upload files\n",
+        "uploaded = files.upload()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 73
+        },
+        "id": "Y7Mz_xwZVHpA",
+        "outputId": "573192b5-29c2-413e-ecd8-d12ceec22228"
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "\n",
+              "     <input type=\"file\" id=\"files-1bcfa240-2975-41d9-b670-cc49f7a9359f\" name=\"files[]\" multiple disabled\n",
+              "        style=\"border:none\" />\n",
+              "     <output id=\"result-1bcfa240-2975-41d9-b670-cc49f7a9359f\">\n",
+              "      Upload widget is only available when the cell has been executed in the\n",
+              "      current browser session. Please rerun this cell to enable.\n",
+              "      </output>\n",
+              "      <script>// Copyright 2017 Google LLC\n",
+              "//\n",
+              "// Licensed under the Apache License, Version 2.0 (the \"License\");\n",
+              "// you may not use this file except in compliance with the License.\n",
+              "// You may obtain a copy of the License at\n",
+              "//\n",
+              "//      http://www.apache.org/licenses/LICENSE-2.0\n",
+              "//\n",
+              "// Unless required by applicable law or agreed to in writing, software\n",
+              "// distributed under the License is distributed on an \"AS IS\" BASIS,\n",
+              "// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n",
+              "// See the License for the specific language governing permissions and\n",
+              "// limitations under the License.\n",
+              "\n",
+              "/**\n",
+              " * @fileoverview Helpers for google.colab Python module.\n",
+              " */\n",
+              "(function(scope) {\n",
+              "function span(text, styleAttributes = {}) {\n",
+              "  const element = document.createElement('span');\n",
+              "  element.textContent = text;\n",
+              "  for (const key of Object.keys(styleAttributes)) {\n",
+              "    element.style[key] = styleAttributes[key];\n",
+              "  }\n",
+              "  return element;\n",
+              "}\n",
+              "\n",
+              "// Max number of bytes which will be uploaded at a time.\n",
+              "const MAX_PAYLOAD_SIZE = 100 * 1024;\n",
+              "\n",
+              "function _uploadFiles(inputId, outputId) {\n",
+              "  const steps = uploadFilesStep(inputId, outputId);\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  // Cache steps on the outputElement to make it available for the next call\n",
+              "  // to uploadFilesContinue from Python.\n",
+              "  outputElement.steps = steps;\n",
+              "\n",
+              "  return _uploadFilesContinue(outputId);\n",
+              "}\n",
+              "\n",
+              "// This is roughly an async generator (not supported in the browser yet),\n",
+              "// where there are multiple asynchronous steps and the Python side is going\n",
+              "// to poll for completion of each step.\n",
+              "// This uses a Promise to block the python side on completion of each step,\n",
+              "// then passes the result of the previous step as the input to the next step.\n",
+              "function _uploadFilesContinue(outputId) {\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  const steps = outputElement.steps;\n",
+              "\n",
+              "  const next = steps.next(outputElement.lastPromiseValue);\n",
+              "  return Promise.resolve(next.value.promise).then((value) => {\n",
+              "    // Cache the last promise value to make it available to the next\n",
+              "    // step of the generator.\n",
+              "    outputElement.lastPromiseValue = value;\n",
+              "    return next.value.response;\n",
+              "  });\n",
+              "}\n",
+              "\n",
+              "/**\n",
+              " * Generator function which is called between each async step of the upload\n",
+              " * process.\n",
+              " * @param {string} inputId Element ID of the input file picker element.\n",
+              " * @param {string} outputId Element ID of the output display.\n",
+              " * @return {!Iterable<!Object>} Iterable of next steps.\n",
+              " */\n",
+              "function* uploadFilesStep(inputId, outputId) {\n",
+              "  const inputElement = document.getElementById(inputId);\n",
+              "  inputElement.disabled = false;\n",
+              "\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  outputElement.innerHTML = '';\n",
+              "\n",
+              "  const pickedPromise = new Promise((resolve) => {\n",
+              "    inputElement.addEventListener('change', (e) => {\n",
+              "      resolve(e.target.files);\n",
+              "    });\n",
+              "  });\n",
+              "\n",
+              "  const cancel = document.createElement('button');\n",
+              "  inputElement.parentElement.appendChild(cancel);\n",
+              "  cancel.textContent = 'Cancel upload';\n",
+              "  const cancelPromise = new Promise((resolve) => {\n",
+              "    cancel.onclick = () => {\n",
+              "      resolve(null);\n",
+              "    };\n",
+              "  });\n",
+              "\n",
+              "  // Wait for the user to pick the files.\n",
+              "  const files = yield {\n",
+              "    promise: Promise.race([pickedPromise, cancelPromise]),\n",
+              "    response: {\n",
+              "      action: 'starting',\n",
+              "    }\n",
+              "  };\n",
+              "\n",
+              "  cancel.remove();\n",
+              "\n",
+              "  // Disable the input element since further picks are not allowed.\n",
+              "  inputElement.disabled = true;\n",
+              "\n",
+              "  if (!files) {\n",
+              "    return {\n",
+              "      response: {\n",
+              "        action: 'complete',\n",
+              "      }\n",
+              "    };\n",
+              "  }\n",
+              "\n",
+              "  for (const file of files) {\n",
+              "    const li = document.createElement('li');\n",
+              "    li.append(span(file.name, {fontWeight: 'bold'}));\n",
+              "    li.append(span(\n",
+              "        `(${file.type || 'n/a'}) - ${file.size} bytes, ` +\n",
+              "        `last modified: ${\n",
+              "            file.lastModifiedDate ? file.lastModifiedDate.toLocaleDateString() :\n",
+              "                                    'n/a'} - `));\n",
+              "    const percent = span('0% done');\n",
+              "    li.appendChild(percent);\n",
+              "\n",
+              "    outputElement.appendChild(li);\n",
+              "\n",
+              "    const fileDataPromise = new Promise((resolve) => {\n",
+              "      const reader = new FileReader();\n",
+              "      reader.onload = (e) => {\n",
+              "        resolve(e.target.result);\n",
+              "      };\n",
+              "      reader.readAsArrayBuffer(file);\n",
+              "    });\n",
+              "    // Wait for the data to be ready.\n",
+              "    let fileData = yield {\n",
+              "      promise: fileDataPromise,\n",
+              "      response: {\n",
+              "        action: 'continue',\n",
+              "      }\n",
+              "    };\n",
+              "\n",
+              "    // Use a chunked sending to avoid message size limits. See b/62115660.\n",
+              "    let position = 0;\n",
+              "    do {\n",
+              "      const length = Math.min(fileData.byteLength - position, MAX_PAYLOAD_SIZE);\n",
+              "      const chunk = new Uint8Array(fileData, position, length);\n",
+              "      position += length;\n",
+              "\n",
+              "      const base64 = btoa(String.fromCharCode.apply(null, chunk));\n",
+              "      yield {\n",
+              "        response: {\n",
+              "          action: 'append',\n",
+              "          file: file.name,\n",
+              "          data: base64,\n",
+              "        },\n",
+              "      };\n",
+              "\n",
+              "      let percentDone = fileData.byteLength === 0 ?\n",
+              "          100 :\n",
+              "          Math.round((position / fileData.byteLength) * 100);\n",
+              "      percent.textContent = `${percentDone}% done`;\n",
+              "\n",
+              "    } while (position < fileData.byteLength);\n",
+              "  }\n",
+              "\n",
+              "  // All done.\n",
+              "  yield {\n",
+              "    response: {\n",
+              "      action: 'complete',\n",
+              "    }\n",
+              "  };\n",
+              "}\n",
+              "\n",
+              "scope.google = scope.google || {};\n",
+              "scope.google.colab = scope.google.colab || {};\n",
+              "scope.google.colab._files = {\n",
+              "  _uploadFiles,\n",
+              "  _uploadFilesContinue,\n",
+              "};\n",
+              "})(self);\n",
+              "</script> "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Saving X_train.xlsx to X_train.xlsx\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import files\n",
+        "\n",
+        "# Upload files\n",
+        "uploaded = files.upload()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 73
+        },
+        "id": "nT203uKSVNyD",
+        "outputId": "1d8a0c6a-554f-434b-fe9c-63c99366c658"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "\n",
+              "     <input type=\"file\" id=\"files-48dad4b2-113c-4916-b951-f9feccda0b66\" name=\"files[]\" multiple disabled\n",
+              "        style=\"border:none\" />\n",
+              "     <output id=\"result-48dad4b2-113c-4916-b951-f9feccda0b66\">\n",
+              "      Upload widget is only available when the cell has been executed in the\n",
+              "      current browser session. Please rerun this cell to enable.\n",
+              "      </output>\n",
+              "      <script>// Copyright 2017 Google LLC\n",
+              "//\n",
+              "// Licensed under the Apache License, Version 2.0 (the \"License\");\n",
+              "// you may not use this file except in compliance with the License.\n",
+              "// You may obtain a copy of the License at\n",
+              "//\n",
+              "//      http://www.apache.org/licenses/LICENSE-2.0\n",
+              "//\n",
+              "// Unless required by applicable law or agreed to in writing, software\n",
+              "// distributed under the License is distributed on an \"AS IS\" BASIS,\n",
+              "// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n",
+              "// See the License for the specific language governing permissions and\n",
+              "// limitations under the License.\n",
+              "\n",
+              "/**\n",
+              " * @fileoverview Helpers for google.colab Python module.\n",
+              " */\n",
+              "(function(scope) {\n",
+              "function span(text, styleAttributes = {}) {\n",
+              "  const element = document.createElement('span');\n",
+              "  element.textContent = text;\n",
+              "  for (const key of Object.keys(styleAttributes)) {\n",
+              "    element.style[key] = styleAttributes[key];\n",
+              "  }\n",
+              "  return element;\n",
+              "}\n",
+              "\n",
+              "// Max number of bytes which will be uploaded at a time.\n",
+              "const MAX_PAYLOAD_SIZE = 100 * 1024;\n",
+              "\n",
+              "function _uploadFiles(inputId, outputId) {\n",
+              "  const steps = uploadFilesStep(inputId, outputId);\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  // Cache steps on the outputElement to make it available for the next call\n",
+              "  // to uploadFilesContinue from Python.\n",
+              "  outputElement.steps = steps;\n",
+              "\n",
+              "  return _uploadFilesContinue(outputId);\n",
+              "}\n",
+              "\n",
+              "// This is roughly an async generator (not supported in the browser yet),\n",
+              "// where there are multiple asynchronous steps and the Python side is going\n",
+              "// to poll for completion of each step.\n",
+              "// This uses a Promise to block the python side on completion of each step,\n",
+              "// then passes the result of the previous step as the input to the next step.\n",
+              "function _uploadFilesContinue(outputId) {\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  const steps = outputElement.steps;\n",
+              "\n",
+              "  const next = steps.next(outputElement.lastPromiseValue);\n",
+              "  return Promise.resolve(next.value.promise).then((value) => {\n",
+              "    // Cache the last promise value to make it available to the next\n",
+              "    // step of the generator.\n",
+              "    outputElement.lastPromiseValue = value;\n",
+              "    return next.value.response;\n",
+              "  });\n",
+              "}\n",
+              "\n",
+              "/**\n",
+              " * Generator function which is called between each async step of the upload\n",
+              " * process.\n",
+              " * @param {string} inputId Element ID of the input file picker element.\n",
+              " * @param {string} outputId Element ID of the output display.\n",
+              " * @return {!Iterable<!Object>} Iterable of next steps.\n",
+              " */\n",
+              "function* uploadFilesStep(inputId, outputId) {\n",
+              "  const inputElement = document.getElementById(inputId);\n",
+              "  inputElement.disabled = false;\n",
+              "\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  outputElement.innerHTML = '';\n",
+              "\n",
+              "  const pickedPromise = new Promise((resolve) => {\n",
+              "    inputElement.addEventListener('change', (e) => {\n",
+              "      resolve(e.target.files);\n",
+              "    });\n",
+              "  });\n",
+              "\n",
+              "  const cancel = document.createElement('button');\n",
+              "  inputElement.parentElement.appendChild(cancel);\n",
+              "  cancel.textContent = 'Cancel upload';\n",
+              "  const cancelPromise = new Promise((resolve) => {\n",
+              "    cancel.onclick = () => {\n",
+              "      resolve(null);\n",
+              "    };\n",
+              "  });\n",
+              "\n",
+              "  // Wait for the user to pick the files.\n",
+              "  const files = yield {\n",
+              "    promise: Promise.race([pickedPromise, cancelPromise]),\n",
+              "    response: {\n",
+              "      action: 'starting',\n",
+              "    }\n",
+              "  };\n",
+              "\n",
+              "  cancel.remove();\n",
+              "\n",
+              "  // Disable the input element since further picks are not allowed.\n",
+              "  inputElement.disabled = true;\n",
+              "\n",
+              "  if (!files) {\n",
+              "    return {\n",
+              "      response: {\n",
+              "        action: 'complete',\n",
+              "      }\n",
+              "    };\n",
+              "  }\n",
+              "\n",
+              "  for (const file of files) {\n",
+              "    const li = document.createElement('li');\n",
+              "    li.append(span(file.name, {fontWeight: 'bold'}));\n",
+              "    li.append(span(\n",
+              "        `(${file.type || 'n/a'}) - ${file.size} bytes, ` +\n",
+              "        `last modified: ${\n",
+              "            file.lastModifiedDate ? file.lastModifiedDate.toLocaleDateString() :\n",
+              "                                    'n/a'} - `));\n",
+              "    const percent = span('0% done');\n",
+              "    li.appendChild(percent);\n",
+              "\n",
+              "    outputElement.appendChild(li);\n",
+              "\n",
+              "    const fileDataPromise = new Promise((resolve) => {\n",
+              "      const reader = new FileReader();\n",
+              "      reader.onload = (e) => {\n",
+              "        resolve(e.target.result);\n",
+              "      };\n",
+              "      reader.readAsArrayBuffer(file);\n",
+              "    });\n",
+              "    // Wait for the data to be ready.\n",
+              "    let fileData = yield {\n",
+              "      promise: fileDataPromise,\n",
+              "      response: {\n",
+              "        action: 'continue',\n",
+              "      }\n",
+              "    };\n",
+              "\n",
+              "    // Use a chunked sending to avoid message size limits. See b/62115660.\n",
+              "    let position = 0;\n",
+              "    do {\n",
+              "      const length = Math.min(fileData.byteLength - position, MAX_PAYLOAD_SIZE);\n",
+              "      const chunk = new Uint8Array(fileData, position, length);\n",
+              "      position += length;\n",
+              "\n",
+              "      const base64 = btoa(String.fromCharCode.apply(null, chunk));\n",
+              "      yield {\n",
+              "        response: {\n",
+              "          action: 'append',\n",
+              "          file: file.name,\n",
+              "          data: base64,\n",
+              "        },\n",
+              "      };\n",
+              "\n",
+              "      let percentDone = fileData.byteLength === 0 ?\n",
+              "          100 :\n",
+              "          Math.round((position / fileData.byteLength) * 100);\n",
+              "      percent.textContent = `${percentDone}% done`;\n",
+              "\n",
+              "    } while (position < fileData.byteLength);\n",
+              "  }\n",
+              "\n",
+              "  // All done.\n",
+              "  yield {\n",
+              "    response: {\n",
+              "      action: 'complete',\n",
+              "    }\n",
+              "  };\n",
+              "}\n",
+              "\n",
+              "scope.google = scope.google || {};\n",
+              "scope.google.colab = scope.google.colab || {};\n",
+              "scope.google.colab._files = {\n",
+              "  _uploadFiles,\n",
+              "  _uploadFilesContinue,\n",
+              "};\n",
+              "})(self);\n",
+              "</script> "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Saving Y_train.xlsx to Y_train.xlsx\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import classification_report, confusion_matrix\n"
+      ],
+      "metadata": {
+        "id": "1pE7nxXDVU3P"
+      },
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "X_train = pd.read_excel('X_train.xlsx')\n",
+        "y_train = pd.read_excel('Y_train.xlsx')"
+      ],
+      "metadata": {
+        "id": "2dWUGlOhVXC6"
+      },
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "X_test = pd.read_excel('X_test.xlsx')\n",
+        "y_test = pd.read_excel('Y_test.xlsx')"
+      ],
+      "metadata": {
+        "id": "joow2dOEVi4a"
+      },
+      "execution_count": 7,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(\"Shape of X_train:\", X_train.shape)\n",
+        "print(\"Shape of Y_train:\", y_train.shape)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "m8dZXssTWEBf",
+        "outputId": "4a5afb87-ef09-49fe-e99b-0e30cc7debd8"
+      },
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Shape of X_train: (212, 14)\n",
+            "Shape of Y_train: (212, 2)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(y_train.head())\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "NRpoh4kCXRv4",
+        "outputId": "20513fff-69c2-4997-8760-262bd8b61baf"
+      },
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "   Unnamed: 0  target\n",
+            "0          49       1\n",
+            "1         171       0\n",
+            "2         223       0\n",
+            "3          58       1\n",
+            "4         154       1\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "\n",
+        "# Load the datasets, ignoring the unnamed index column\n",
+        "X_train = pd.read_excel('X_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_train = pd.read_excel('Y_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "X_test = pd.read_excel('X_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_test = pd.read_excel('Y_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Check the shapes\n",
+        "print(\"Shape of X_train:\", X_train.shape)\n",
+        "print(\"Shape of Y_train:\", Y_train.shape)\n",
+        "print(\"Shape of X_test:\", X_test.shape)\n",
+        "print(\"Shape of Y_test:\", Y_test.shape)\n",
+        "\n",
+        "# Prepare y_train and y_test\n",
+        "y_train = Y_train.values.ravel()  # Flatten the array\n",
+        "y_test = Y_test.values.ravel()  # Flatten the array for testing\n",
+        "\n",
+        "# Initialize the model\n",
+        "model = LogisticRegression(random_state=17, max_iter=1000)\n",
+        "\n",
+        "# Fit the model\n",
+        "model.fit(X_train, y_train)\n",
+        "\n",
+        "# Predict on training data\n",
+        "y_pred_train = model.predict(X_train)\n",
+        "\n",
+        "# Predict on testing data\n",
+        "y_pred_test = model.predict(X_test)\n",
+        "\n",
+        "# Print classification reports and confusion matrix\n",
+        "from sklearn.metrics import classification_report, confusion_matrix\n",
+        "\n",
+        "# Classification report for training data\n",
+        "print(\"Classification Report (Train Data):\")\n",
+        "print(classification_report(y_train, y_pred_train, digits=2))\n",
+        "\n",
+        "# Classification report for testing data\n",
+        "print(\"Classification Report (Test Data):\")\n",
+        "print(classification_report(y_test, y_pred_test, digits=2))\n",
+        "\n",
+        "# Confusion matrix for test data\n",
+        "conf_matrix = confusion_matrix(y_test, y_pred_test)\n",
+        "print(\"Confusion Matrix (Test Data):\")\n",
+        "print(conf_matrix)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "zCUQcfPWXvB8",
+        "outputId": "b8dac0cc-cbca-4802-aac3-f2df9ccbd599"
+      },
+      "execution_count": 13,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Shape of X_train: (212, 13)\n",
+            "Shape of Y_train: (212, 1)\n",
+            "Shape of X_test: (91, 13)\n",
+            "Shape of Y_test: (91, 1)\n",
+            "Classification Report (Train Data):\n",
+            "              precision    recall  f1-score   support\n",
+            "\n",
+            "           0       0.86      0.77      0.81        88\n",
+            "           1       0.85      0.91      0.88       124\n",
+            "\n",
+            "    accuracy                           0.85       212\n",
+            "   macro avg       0.86      0.84      0.85       212\n",
+            "weighted avg       0.85      0.85      0.85       212\n",
+            "\n",
+            "Classification Report (Test Data):\n",
+            "              precision    recall  f1-score   support\n",
+            "\n",
+            "           0       0.89      0.66      0.76        50\n",
+            "           1       0.69      0.90      0.78        41\n",
+            "\n",
+            "    accuracy                           0.77        91\n",
+            "   macro avg       0.79      0.78      0.77        91\n",
+            "weighted avg       0.80      0.77      0.77        91\n",
+            "\n",
+            "Confusion Matrix (Test Data):\n",
+            "[[33 17]\n",
+            " [ 4 37]]\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.11/dist-packages/sklearn/linear_model/_logistic.py:465: ConvergenceWarning: lbfgs failed to converge (status=1):\n",
+            "STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.\n",
+            "\n",
+            "Increase the number of iterations (max_iter) or scale the data as shown in:\n",
+            "    https://scikit-learn.org/stable/modules/preprocessing.html\n",
+            "Please also refer to the documentation for alternative solver options:\n",
+            "    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression\n",
+            "  n_iter_i = _check_optimize_result(\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Calculate the proportion of patients with heart disease\n",
+        "heart_disease_count = Y_train[Y_train['target'] == 1].shape[0]\n",
+        "total_patients = Y_train.shape[0]\n",
+        "\n",
+        "proportion = (heart_disease_count / total_patients) * 100\n",
+        "print(f\"Proportion of patients with heart disease: {proportion:.2f}%\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "vLoickyAYZgn",
+        "outputId": "2b8e52ac-414f-4397-cb9e-4febab14d53f"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Proportion of patients with heart disease: 58.49%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "\n",
+        "# Load Y_train to calculate the proportion of patients with heart disease\n",
+        "Y_train = pd.read_excel('Y_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Calculate the proportion of patients with heart disease\n",
+        "heart_disease_count = Y_train[Y_train['target'] == 1].shape[0]\n",
+        "total_patients = Y_train.shape[0]\n",
+        "\n",
+        "proportion = (heart_disease_count / total_patients) * 100\n",
+        "print(f\"Proportion of patients with heart disease: {proportion:.2f}%\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "0TH1d8CwYmDS",
+        "outputId": "a5f2f4aa-651e-4c02-ab4e-8ec7ea2a0326"
+      },
+      "execution_count": 15,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Proportion of patients with heart disease: 58.49%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "\n",
+        "# Load Y_test to calculate the proportion of patients with heart disease\n",
+        "Y_test = pd.read_excel('Y_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Calculate the proportion of patients with heart disease in the test dataset\n",
+        "heart_disease_test_count = Y_test[Y_test['target'] == 1].shape[0]\n",
+        "total_patients_test = Y_test.shape[0]\n",
+        "\n",
+        "proportion_test = (heart_disease_test_count / total_patients_test) * 100\n",
+        "print(f\"Proportion of patients with heart disease in the test dataset: {proportion_test:.2f}%\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ShYj06IQYrN5",
+        "outputId": "460a3424-1e56-4f58-91d3-dbb01c43bff4"
+      },
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Proportion of patients with heart disease in the test dataset: 45.05%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "\n",
+        "# Load Y_test to calculate the proportion of patients without heart disease\n",
+        "Y_test = pd.read_excel('Y_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Calculate the proportion of patients who do not have heart disease in the test dataset\n",
+        "heart_disease_not_count = Y_test[Y_test['target'] == 0].shape[0]\n",
+        "total_patients_test = Y_test.shape[0]\n",
+        "\n",
+        "proportion_not_test = (heart_disease_not_count / total_patients_test) * 100\n",
+        "print(f\"Proportion of patients who do not have heart disease in the test dataset: {proportion_not_test:.2f}%\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "UykKHr7YY14P",
+        "outputId": "9793940b-9d92-418f-bcd7-32e91d897e8b"
+      },
+      "execution_count": 17,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Proportion of patients who do not have heart disease in the test dataset: 54.95%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "\n",
+        "# Load Y_train to calculate the proportion of patients without heart disease\n",
+        "Y_train = pd.read_excel('Y_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Calculate the proportion of patients who do not have heart disease in the training dataset\n",
+        "heart_disease_not_count_train = Y_train[Y_train['target'] == 0].shape[0]\n",
+        "total_patients_train = Y_train.shape[0]\n",
+        "\n",
+        "proportion_not_train = (heart_disease_not_count_train / total_patients_train) * 100\n",
+        "print(f\"Proportion of patients who do not have heart disease in the training dataset: {proportion_not_train:.2f}%\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "92XneFdCZBTz",
+        "outputId": "fbd8b3fd-6c72-4242-ded3-181e3cf1426c"
+      },
+      "execution_count": 18,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Proportion of patients who do not have heart disease in the training dataset: 41.51%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import accuracy_score\n",
+        "\n",
+        "# Load the datasets (ensure to ignore the unnamed columns)\n",
+        "X_train = pd.read_excel('X_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_train = pd.read_excel('Y_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Prepare y_train\n",
+        "y_train = Y_train.values.ravel()\n",
+        "\n",
+        "# Initialize and fit the model\n",
+        "model = LogisticRegression(random_state=17, max_iter=2000)\n",
+        "model.fit(X_train, y_train)\n",
+        "\n",
+        "# Make predictions on the training data\n",
+        "y_pred_train = model.predict(X_train)\n",
+        "\n",
+        "# Calculate training accuracy\n",
+        "training_accuracy = accuracy_score(y_train, y_pred_train) * 100\n",
+        "print(f\"Training Accuracy: {training_accuracy:.2f}%\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "a4LS7ZmVccJR",
+        "outputId": "b4cc03a4-9b5d-419c-a2e0-3575f9c26986"
+      },
+      "execution_count": 19,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Training Accuracy: 85.38%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import precision_score\n",
+        "\n",
+        "# Load the datasets (ensure to ignore the unnamed columns)\n",
+        "X_train = pd.read_excel('X_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_train = pd.read_excel('Y_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Prepare y_train\n",
+        "y_train = Y_train.values.ravel()\n",
+        "\n",
+        "# Initialize and fit the model\n",
+        "model = LogisticRegression(random_state=17, max_iter=2000)\n",
+        "model.fit(X_train, y_train)\n",
+        "\n",
+        "# Make predictions on the training data\n",
+        "y_pred_train = model.predict(X_train)\n",
+        "\n",
+        "# Calculate precision for the negative class (patients who do not have heart disease)\n",
+        "precision_train = precision_score(y_train, y_pred_train, pos_label=0) * 100\n",
+        "print(f\"Training Data Precision (No Heart Disease): {precision_train:.2f}%\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "DuESVk8Zct0K",
+        "outputId": "445c639a-2161-45a4-fda1-e157bae335f6"
+      },
+      "execution_count": 20,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Training Data Precision (No Heart Disease): 86.08%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import recall_score\n",
+        "\n",
+        "# Load the datasets (ensure to ignore the unnamed columns)\n",
+        "X_train = pd.read_excel('X_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_train = pd.read_excel('Y_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Prepare y_train\n",
+        "y_train = Y_train.values.ravel()\n",
+        "\n",
+        "# Initialize and fit the model\n",
+        "model = LogisticRegression(random_state=17, max_iter=2000)\n",
+        "model.fit(X_train, y_train)\n",
+        "\n",
+        "# Make predictions on the training data\n",
+        "y_pred_train = model.predict(X_train)\n",
+        "\n",
+        "# Calculate recall for the positive class (patients who have heart disease)\n",
+        "recall_train = recall_score(y_train, y_pred_train, pos_label=1) * 100\n",
+        "print(f\"Training Data Recall (Heart Disease): {recall_train:.2f}%\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "FTDw8qJEc6TZ",
+        "outputId": "ce284afa-483f-4c49-b712-763f272f5390"
+      },
+      "execution_count": 21,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Training Data Recall (Heart Disease): 91.13%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import confusion_matrix\n",
+        "\n",
+        "# Load the datasets (ensure to ignore the unnamed columns)\n",
+        "X_test = pd.read_excel('X_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_test = pd.read_excel('Y_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Prepare y_test\n",
+        "y_test = Y_test.values.ravel()\n",
+        "\n",
+        "# Initialize and fit the model\n",
+        "model = LogisticRegression(random_state=17, max_iter=2000)\n",
+        "model.fit(X_train, y_train)  # Assuming X_train and y_train are already loaded\n",
+        "\n",
+        "# Make predictions on the test data\n",
+        "y_pred_test = model.predict(X_test)\n",
+        "\n",
+        "# Calculate the confusion matrix\n",
+        "conf_matrix_test = confusion_matrix(y_test, y_pred_test)\n",
+        "\n",
+        "# Extract the number of false positives (type 1 error)\n",
+        "false_positive = conf_matrix_test[0, 1]\n",
+        "print(f\"Number of False Positives: {false_positive}\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Rd-_-P0EdDd0",
+        "outputId": "c8d21e18-bf3a-4c67-f082-42bb07a39d14"
+      },
+      "execution_count": 22,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Number of False Positives: 17\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import confusion_matrix\n",
+        "\n",
+        "# Load the datasets (ensure to ignore the unnamed columns)\n",
+        "X_test = pd.read_excel('X_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_test = pd.read_excel('Y_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Prepare y_test\n",
+        "y_test = Y_test.values.ravel()\n",
+        "\n",
+        "# Initialize and fit the model\n",
+        "model = LogisticRegression(random_state=17, max_iter=2000)\n",
+        "model.fit(X_train, y_train)  # Assuming X_train and y_train are already loaded\n",
+        "\n",
+        "# Make predictions on the test data\n",
+        "y_pred_test = model.predict(X_test)\n",
+        "\n",
+        "# Calculate the confusion matrix\n",
+        "conf_matrix_test = confusion_matrix(y_test, y_pred_test)\n",
+        "\n",
+        "# Extract the number of false negatives (type 2 error)\n",
+        "false_negative = conf_matrix_test[1, 0]\n",
+        "print(f\"Number of False Negatives: {false_negative}\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "4-5Igk_ndPfX",
+        "outputId": "8428fe44-caff-4b07-c43b-4ca958fdb626"
+      },
+      "execution_count": 23,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Number of False Negatives: 4\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import accuracy_score\n",
+        "\n",
+        "# Load the datasets (ensure to ignore the unnamed columns)\n",
+        "X_test = pd.read_excel('X_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_test = pd.read_excel('Y_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Prepare y_test\n",
+        "y_test = Y_test.values.ravel()\n",
+        "\n",
+        "# Initialize and fit the model\n",
+        "model = LogisticRegression(random_state=17, max_iter=2000)\n",
+        "model.fit(X_train, y_train)  # Assuming X_train and y_train are already loaded\n",
+        "\n",
+        "# Make predictions on the test data\n",
+        "y_pred_test = model.predict(X_test)\n",
+        "\n",
+        "# Calculate the accuracy of the model on the test data\n",
+        "test_accuracy = accuracy_score(y_test, y_pred_test) * 100\n",
+        "test_accuracy_rounded = round(test_accuracy, 2)\n",
+        "print(f\"Test Accuracy: {test_accuracy_rounded:.2f}%\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "FOM6gYmedeaa",
+        "outputId": "44d0b71c-d4fc-472f-d0b8-6e766d8ff026"
+      },
+      "execution_count": 24,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Test Accuracy: 76.92%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import precision_score\n",
+        "\n",
+        "# Load the datasets (ensure to ignore the unnamed columns)\n",
+        "X_test = pd.read_excel('X_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_test = pd.read_excel('Y_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Prepare y_test\n",
+        "y_test = Y_test.values.ravel()\n",
+        "\n",
+        "# Initialize and fit the model\n",
+        "model = LogisticRegression(random_state=17, max_iter=2000)\n",
+        "model.fit(X_train, y_train)  # Assuming X_train and y_train are already loaded\n",
+        "\n",
+        "# Make predictions on the test data\n",
+        "y_pred_test = model.predict(X_test)\n",
+        "\n",
+        "# Calculate precision for the positive class (patients who have heart disease)\n",
+        "precision_test = precision_score(y_test, y_pred_test, pos_label=1) * 100\n",
+        "precision_test_rounded = round(precision_test, 2)\n",
+        "\n",
+        "print(f\"Test Precision (Heart Disease): {precision_test_rounded:.2f}%\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "mYXh4m8Mdp-h",
+        "outputId": "77ec9d11-e0f9-48ae-ac00-b9b707aea19f"
+      },
+      "execution_count": 25,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Test Precision (Heart Disease): 68.52%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import recall_score\n",
+        "\n",
+        "# Load the datasets (ensure to ignore the unnamed columns)\n",
+        "X_test = pd.read_excel('X_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_test = pd.read_excel('Y_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Prepare y_test\n",
+        "y_test = Y_test.values.ravel()\n",
+        "\n",
+        "# Initialize and fit the model\n",
+        "model = LogisticRegression(random_state=17, max_iter=2000)\n",
+        "model.fit(X_train, y_train)  # Assuming X_train and y_train are already loaded\n",
+        "\n",
+        "# Make predictions on the test data\n",
+        "y_pred_test = model.predict(X_test)\n",
+        "\n",
+        "# Calculate recall for the positive class (patients who have heart disease)\n",
+        "recall_test = recall_score(y_test, y_pred_test, pos_label=1) * 100\n",
+        "recall_test_rounded = round(recall_test, 2)\n",
+        "\n",
+        "print(f\"Test Recall (Heart Disease): {recall_test_rounded:.2f}%\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "JndbRXzbd1yj",
+        "outputId": "b36a842d-3659-488e-b8fe-2ada676fefe7"
+      },
+      "execution_count": 26,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Test Recall (Heart Disease): 90.24%\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import precision_score\n",
+        "\n",
+        "# Load the datasets (ensure to ignore the unnamed columns)\n",
+        "X_train = pd.read_excel('X_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_train = pd.read_excel('Y_train.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "X_test = pd.read_excel('X_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "Y_test = pd.read_excel('Y_test.xlsx', usecols=lambda column: column not in ['Unnamed: 0'])\n",
+        "\n",
+        "# Prepare y_train and y_test\n",
+        "y_train = Y_train.values.ravel()\n",
+        "y_test = Y_test.values.ravel()\n",
+        "\n",
+        "# Initialize and fit the model\n",
+        "model = LogisticRegression(random_state=17, max_iter=2000)\n",
+        "model.fit(X_train, y_train)\n",
+        "\n",
+        "# Make predictions on the training data\n",
+        "y_pred_train = model.predict(X_train)\n",
+        "# Make predictions on the test data\n",
+        "y_pred_test = model.predict(X_test)\n",
+        "\n",
+        "# Calculate precision for the positive class (patients who have heart disease)\n",
+        "precision_train = precision_score(y_train, y_pred_train, pos_label=1) * 100\n",
+        "precision_test = precision_score(y_test, y_pred_test, pos_label=1) * 100\n",
+        "\n",
+        "# Print precision values\n",
+        "print(f\"Training Precision: {precision_train:.2f}%\")\n",
+        "print(f\"Test Precision: {precision_test:.2f}%\")\n",
+        "\n",
+        "# Compare precision\n",
+        "if precision_train > precision_test:\n",
+        "    print(\"Training Precision > Test Precision\")\n",
+        "elif precision_train < precision_test:\n",
+        "    print(\"Training Precision < Test Precision\")\n",
+        "else:\n",
+        "    print(\"Training Precision = Test Precision\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "J5oNLg1oePLj",
+        "outputId": "cfdc768c-5de8-4766-80c2-6bf6a88ff8d5"
+      },
+      "execution_count": 27,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Training Precision: 84.96%\n",
+            "Test Precision: 68.52%\n",
+            "Training Precision > Test Precision\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
